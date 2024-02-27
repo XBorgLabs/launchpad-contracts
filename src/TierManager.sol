@@ -154,18 +154,24 @@ contract TierManager is AccessControlUpgradeable, UUPSUpgradeable {
         emit SetFundraiseTiers(_fundraiseIndex, _tierIds);
     }
 
-    /// @notice Sets a new tier to an address
-    /// @param _whitelistAddress The address to benefit from the gifted tier
-    /// @param _tierIndex The index of the tier (related to {tiers}) to grant
-    function setWhitelist(address _whitelistAddress, uint256 _tierIndex) external onlyRole(MANAGER_ROLE) {
-        whitelist[_whitelistAddress][_tierIndex] = true;
+    /// @notice Sets a new tier to a batch of addresses
+    /// @param _whitelistAddresses The addresses to benefit from the gifted tier
+    /// @param _tierIndexes The indexes of the tiers (related to {tiers}) to grant
+    function setWhitelist(address[] calldata _whitelistAddresses, uint256[] calldata _tierIndexes) external onlyRole(MANAGER_ROLE) {
+        require(_whitelistAddresses.length == _tierIndexes.length, "WRONG_PARAMS");
+        for (uint256 i = 0; i < _whitelistAddresses.length; i++) {
+            whitelist[_whitelistAddresses[i]][_tierIndexes[i]] = true;
+        }
     }
 
-    /// @notice Removes a tier from an address
-    /// @param _whitelistAddress The address to benefit from the gifted tier
-    /// @param _tierIndex The index of the tier (related to {tiers}) to remove
-    function removeWhitelist(address _whitelistAddress, uint256 _tierIndex) external onlyRole(MANAGER_ROLE) {
-        whitelist[_whitelistAddress][_tierIndex] = false;
+    /// @notice Removes a tier from a batch of addresses
+    /// @param _whitelistAddresses The addresses to benefit from the gifted tier
+    /// @param _tierIndexes The indexes of the tiers (related to {tiers}) to remove
+    function removeWhitelist(address[] calldata _whitelistAddresses, uint256[] calldata _tierIndexes) external onlyRole(MANAGER_ROLE) {
+        require(_whitelistAddresses.length == _tierIndexes.length, "WRONG_PARAMS");
+        for (uint256 i = 0; i < _whitelistAddresses.length; i++) {
+            whitelist[_whitelistAddresses[i]][_tierIndexes[i]] = false;
+        }
     }
 
     /// @notice Updates the tiers mapping with a new or an updated tier.

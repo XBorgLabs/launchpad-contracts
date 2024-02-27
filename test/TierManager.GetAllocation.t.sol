@@ -423,7 +423,14 @@ contract TierManagerGetAllocation is Base {
 
         // Set whitelist
         vm.startPrank(MANAGER);
-        tierManager.setWhitelist(TESTER, 2);
+
+        address[] memory whitelistAddresses = new address[](1);
+        whitelistAddresses[0] = TESTER;
+
+        uint256[] memory tierIndexes = new uint256[](1);
+        tierIndexes[0] = 2;
+
+        tierManager.setWhitelist(whitelistAddresses, tierIndexes);
         vm.stopPrank();
 
         // Make sure TESTER has no tokens
