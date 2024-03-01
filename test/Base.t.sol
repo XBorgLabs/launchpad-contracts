@@ -134,6 +134,7 @@ abstract contract Base is Test {
     function createFundraise(Token _token) public {
         vm.startPrank(MANAGER);
 
+        string memory name = "Fundraise";
         uint256 softCap = 100 * 10**18;
         uint256 hardCap = 1000 * 10**18;
         uint256 startTime = block.timestamp + 60;
@@ -141,7 +142,7 @@ abstract contract Base is Test {
         bool whitelistEnabled = true;
 
         // Create fundraise
-        vault.createFundraise(address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
+        vault.createFundraise(name, address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
 
         // Add a tier
         createDefaultTier();

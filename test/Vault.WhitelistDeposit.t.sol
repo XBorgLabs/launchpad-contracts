@@ -77,7 +77,7 @@ contract VaultWhitelistDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,,, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,,, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(endTime + 1);
 
         uint256 depositAmount = 50 * 10**18; // Tier is >= 42 && <= 69
@@ -101,7 +101,7 @@ contract VaultWhitelistDeposit is Base {
         bytes memory signature = createSignature(0, TESTER);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Deposit
@@ -123,7 +123,7 @@ contract VaultWhitelistDeposit is Base {
         bytes memory signature = createSignature(0, TESTER);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -150,7 +150,7 @@ contract VaultWhitelistDeposit is Base {
         bytes memory signature = createSignature(0, TESTER);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -177,7 +177,7 @@ contract VaultWhitelistDeposit is Base {
         bytes memory signature = createSignature(0, TESTER);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Deposit
@@ -186,7 +186,7 @@ contract VaultWhitelistDeposit is Base {
         token.approve(address(vault), depositAmount);
         vault.whitelistDeposit(0, depositAmount, signature);
 
-        (,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
+        (,,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
 
         assertTrue(fundraiseWhitelistEnabled);
         assertEq(currentAmountRaised, depositAmount);
@@ -205,7 +205,7 @@ contract VaultWhitelistDeposit is Base {
         bytes memory signature = createSignature(0, TESTER);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Deposit

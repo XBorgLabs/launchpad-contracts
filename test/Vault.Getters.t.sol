@@ -12,6 +12,7 @@ contract VaultGetters is Base {
     function createNewFundraise(Token _token) internal {
         vm.startPrank(MANAGER);
 
+        string memory fundraiseName = "Fundraise";
         uint256 softCap = 100 * 10**18;
         uint256 hardCap = 1000 * 10**18;
         uint256 startTime = block.timestamp + 60;
@@ -19,7 +20,7 @@ contract VaultGetters is Base {
         bool whitelistEnabled = true;
 
         // Create fundraise
-        vault.createFundraise(address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
+        vault.createFundraise(fundraiseName, address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
 
         // Remove whitelist
         vault.setWhitelist(0, false);
@@ -49,7 +50,7 @@ contract VaultGetters is Base {
     }
 
     function startFundraise(uint256 _index) internal {
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(_index);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(_index);
         vm.warp(startTime);
     }
 
@@ -64,7 +65,7 @@ contract VaultGetters is Base {
     }
 
     function endFundraise(uint256 _index) internal {
-        (,,,,,uint256 endTime,,,,) = vault.fundraises(_index);
+        (,,,,,,uint256 endTime,,,,) = vault.fundraises(_index);
         vm.warp(endTime + 1);
     }
 

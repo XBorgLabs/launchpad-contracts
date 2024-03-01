@@ -56,7 +56,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,,, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,,, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(endTime + 1);
 
         // Remove whitelist
@@ -80,7 +80,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1001 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -105,7 +105,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -130,7 +130,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -155,7 +155,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -181,7 +181,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 7 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -207,7 +207,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 7 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -232,7 +232,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -247,7 +247,7 @@ contract VaultDeposit is Base {
         token.approve(address(vault), depositAmount);
         vault.deposit(0, depositAmount);
 
-        (,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
+        (,,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
 
         assertFalse(fundraiseWhitelistEnabled);
         assertEq(currentAmountRaised, depositAmount);
@@ -267,7 +267,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 7 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -282,7 +282,7 @@ contract VaultDeposit is Base {
         token.approve(address(vault), depositAmount);
         vault.deposit(0, depositAmount);
 
-        (,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
+        (,,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
 
         assertFalse(fundraiseWhitelistEnabled);
         assertEq(currentAmountRaised, depositAmount);
@@ -298,7 +298,7 @@ contract VaultDeposit is Base {
         deal(address(token), TESTER, 1000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist

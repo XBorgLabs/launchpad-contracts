@@ -15,7 +15,7 @@ contract VaultWithdraw is Base {
         deal(address(token), TESTER, 10000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -77,13 +77,13 @@ contract VaultWithdraw is Base {
         uint256 depositAmount = 50 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
         uint256 initialBalance = token.balanceOf(TESTER);
-        (,,,,,,,, uint256 amountRaisedStart,) = vault.fundraises(0);
+        (,,,,,,,,, uint256 amountRaisedStart,) = vault.fundraises(0);
 
         vm.startPrank(TESTER);
 
         vault.withdraw(0);
 
-        (,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
+        (,,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
         uint256 finalBalance = token.balanceOf(TESTER);
         assertEq(finalBalance - initialBalance, depositAmount);
         assertEq(amountRaisedStart - amountRaisedEnd, depositAmount);

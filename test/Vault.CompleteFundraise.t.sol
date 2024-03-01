@@ -15,7 +15,7 @@ contract VaultCompleteFundraise is Base {
         deal(address(token), TESTER, 10000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -93,7 +93,7 @@ contract VaultCompleteFundraise is Base {
         uint256 depositAmount = 150 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
 
-        (,,,,,,,,, bool completedStart) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedStart) = vault.fundraises(0);
         assertFalse(completedStart);
 
         vm.startPrank(BENEFICIARY);
@@ -101,7 +101,7 @@ contract VaultCompleteFundraise is Base {
         // Complete
         vault.completeFundraise(0);
 
-        (,,,,,,,,, bool completedEnd) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedEnd) = vault.fundraises(0);
         assertTrue(completedEnd);
         assertEq(token.balanceOf(BENEFICIARY), depositAmount);
         assertEq(token.balanceOf(OWNER), 0);
@@ -113,7 +113,7 @@ contract VaultCompleteFundraise is Base {
         uint256 depositAmount = 150 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
 
-        (,,,,,,,,, bool completedStart) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedStart) = vault.fundraises(0);
         assertFalse(completedStart);
 
         vm.startPrank(MANAGER);
@@ -121,7 +121,7 @@ contract VaultCompleteFundraise is Base {
         // Complete
         vault.completeFundraise(0);
 
-        (,,,,,,,,, bool completedEnd) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedEnd) = vault.fundraises(0);
         assertTrue(completedEnd);
         assertEq(token.balanceOf(BENEFICIARY), depositAmount);
         assertEq(token.balanceOf(OWNER), 0);
@@ -132,6 +132,7 @@ contract VaultCompleteFundraise is Base {
     function test_completeFundraise_emptyRaise() public {
         vm.startPrank(MANAGER);
 
+        string memory name = "Fundraise";
         uint256 softCap = 0;
         uint256 hardCap = 1000 * 10**18;
         uint256 startTime = block.timestamp + 60;
@@ -139,9 +140,9 @@ contract VaultCompleteFundraise is Base {
         bool whitelistEnabled = true;
 
         // Create fundraise
-        vault.createFundraise(address(token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
+        vault.createFundraise(name, address(token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
 
-        (,,,,,,,,, bool completedStart) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedStart) = vault.fundraises(0);
         assertFalse(completedStart);
 
         vm.warp(endTime + 1);
@@ -149,7 +150,7 @@ contract VaultCompleteFundraise is Base {
         // Complete with no deposits
         vault.completeFundraise(0);
 
-        (,,,,,,,,, bool completedEnd) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedEnd) = vault.fundraises(0);
         assertTrue(completedEnd);
         assertEq(token.balanceOf(BENEFICIARY), 0);
         assertEq(token.balanceOf(OWNER), 0);
@@ -159,7 +160,7 @@ contract VaultCompleteFundraise is Base {
         uint256 depositAmount = 150 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
 
-        (,,,,,,,,, bool completedStart) = vault.fundraises(0);
+        (,,,,,,,,,, bool completedStart) = vault.fundraises(0);
         assertFalse(completedStart);
 
         vm.startPrank(BENEFICIARY);

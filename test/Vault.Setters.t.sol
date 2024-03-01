@@ -18,7 +18,7 @@ contract VaultSetters is Base {
         deal(address(token), TESTER, 10000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -44,7 +44,7 @@ contract VaultSetters is Base {
         createAndDepositFundraise(100 * 10**18, false);
 
         vm.startPrank(DEPLOYER);
-        
+
         bytes memory error = abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", address(DEPLOYER), keccak256("MANAGER_ROLE"));
         vm.expectRevert(error);
         vault.setBeneficiary(0, DEPLOYER);
@@ -69,7 +69,7 @@ contract VaultSetters is Base {
         vm.startPrank(MANAGER);
 
         // End and complete
-        (,,,,, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,,, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(endTime + 1);
         vault.completeFundraise(0);
 
@@ -84,12 +84,12 @@ contract VaultSetters is Base {
 
         vm.startPrank(MANAGER);
 
-        (, address startBeneficiary,,,,,,,,) = vault.fundraises(0);
+        (,, address startBeneficiary,,,,,,,,) = vault.fundraises(0);
         assertEq(startBeneficiary, BENEFICIARY);
 
         vault.setBeneficiary(0, DEPLOYER);
 
-        (, address endBeneficiary,,,,,,,,) = vault.fundraises(0);
+        (,, address endBeneficiary,,,,,,,,) = vault.fundraises(0);
         assertEq(endBeneficiary, DEPLOYER);
 
         vm.stopPrank();
@@ -134,13 +134,13 @@ contract VaultSetters is Base {
 
         vm.startPrank(MANAGER);
 
-        (,, uint256 startSoftCap, uint256 startHardCap,,,,,,) = vault.fundraises(0);
+        (,,, uint256 startSoftCap, uint256 startHardCap,,,,,,) = vault.fundraises(0);
         assertEq(startSoftCap, 100 * 10**18);
         assertEq(startHardCap, 1000 * 10**18);
 
         vault.setCap(0, 1 * 10**18, 20000 * 10**18);
 
-        (,, uint256 endSoftCap, uint256 endHardCap,,,,,,) = vault.fundraises(0);
+        (,,, uint256 endSoftCap, uint256 endHardCap,,,,,,) = vault.fundraises(0);
         assertEq(endSoftCap, 1 * 10**18);
         assertEq(endHardCap, 20000 * 10**18);
 
@@ -175,14 +175,14 @@ contract VaultSetters is Base {
 
         vm.startPrank(MANAGER);
 
-        (,,,,,,, Vault.PublicFundraise memory startPublicFundraise,,) = vault.fundraises(0);
+        (,,,,,,,, Vault.PublicFundraise memory startPublicFundraise,,) = vault.fundraises(0);
         assertFalse(startPublicFundraise.enabled);
         assertEq(startPublicFundraise.minAllocation, 0);
         assertEq(startPublicFundraise.maxAllocation, 0);
 
         vault.setPublicFundraise(0, true, 10 * 10**18, 20 * 10**18);
 
-        (,,,,,,, Vault.PublicFundraise memory endPublicFundraise,,) = vault.fundraises(0);
+        (,,,,,,,, Vault.PublicFundraise memory endPublicFundraise,,) = vault.fundraises(0);
         assertTrue(endPublicFundraise.enabled);
         assertEq(endPublicFundraise.minAllocation, 10 * 10**18);
         assertEq(endPublicFundraise.maxAllocation, 20 * 10**18);
@@ -230,13 +230,13 @@ contract VaultSetters is Base {
 
         vm.startPrank(MANAGER);
 
-        (,,,, uint256 startStartTime, uint256 startEndTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startStartTime, uint256 startEndTime,,,,) = vault.fundraises(0);
         assertEq(startStartTime, 61);
         assertEq(startEndTime, 661);
 
         vault.setTime(0, 10, 200);
 
-        (,,,, uint256 endStartTime, uint256 endEndTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 endStartTime, uint256 endEndTime,,,,) = vault.fundraises(0);
         assertEq(endStartTime, 10);
         assertEq(endEndTime, 200);
 

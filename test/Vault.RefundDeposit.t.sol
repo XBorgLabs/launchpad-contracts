@@ -15,7 +15,7 @@ contract VaultRefundDeposit is Base {
         deal(address(token), TESTER, 10000 * 10**18);
 
         // Move forward in time
-        (,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
+        (,,,,, uint256 startTime, uint256 endTime,,,,) = vault.fundraises(0);
         vm.warp(startTime);
 
         // Remove whitelist
@@ -94,7 +94,7 @@ contract VaultRefundDeposit is Base {
         uint256 depositAmount = 150 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
 
-        (,,,,,,,, uint256 amountRaisedStart,) = vault.fundraises(0);
+        (,,,,,,,,, uint256 amountRaisedStart,) = vault.fundraises(0);
         uint256 tokenBalanceStart = token.balanceOf(TESTER);
 
         vm.startPrank(MANAGER);
@@ -102,7 +102,7 @@ contract VaultRefundDeposit is Base {
         // Refund
         vault.refundDeposit(0, TESTER);
 
-        (,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
+        (,,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
         uint256 tokenBalanceEnd = token.balanceOf(TESTER);
 
         assertEq(tokenBalanceEnd - tokenBalanceStart, depositAmount);
@@ -116,7 +116,7 @@ contract VaultRefundDeposit is Base {
         uint256 depositAmount = 50 * 10**18; // Soft cap is at 100
         createAndDepositFundraise(depositAmount, true);
 
-        (,,,,, uint256 endTime,,, uint256 amountRaisedStart,) = vault.fundraises(0);
+        (,,,,,, uint256 endTime,,, uint256 amountRaisedStart,) = vault.fundraises(0);
         uint256 tokenBalanceStart = token.balanceOf(TESTER);
 
         vm.startPrank(MANAGER);
@@ -125,7 +125,7 @@ contract VaultRefundDeposit is Base {
         // Refund
         vault.refundDeposit(0, TESTER);
 
-        (,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
+        (,,,,,,,,, uint256 amountRaisedEnd,) = vault.fundraises(0);
         uint256 tokenBalanceEnd = token.balanceOf(TESTER);
 
         assertEq(tokenBalanceEnd - tokenBalanceStart, depositAmount);
