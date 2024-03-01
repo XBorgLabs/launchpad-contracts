@@ -6,7 +6,7 @@ import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol";
-import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import "openzeppelin-contracts-upgradeable/contracts/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgradeable.sol";
@@ -14,7 +14,7 @@ import "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgrad
 /// @title Vault
 /// @notice Implements a vault where fundraises can be created.
 /// @author XBorg
-contract Vault is AccessControlUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
+contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
     using SafeERC20 for IERC20;
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
@@ -128,7 +128,7 @@ contract Vault is AccessControlUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgr
         tierManager = _tierManager;
         whitelistSigner = _whitelistSigner;
 
-        __AccessControl_init();
+        __AccessControlEnumerable_init();
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
         _grantRole(MANAGER_ROLE, _manager);

@@ -5,13 +5,13 @@ import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
-import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import "openzeppelin-contracts-upgradeable/contracts/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 
 /// @title TierManager
 /// @notice Implements a tier system for minimum and maximum allocations.
 /// @author XBorg
-contract TierManager is AccessControlUpgradeable, UUPSUpgradeable {
+contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     using SafeERC20 for IERC20;
 
     struct Tier {
@@ -72,7 +72,7 @@ contract TierManager is AccessControlUpgradeable, UUPSUpgradeable {
         require(_manager != address(0), "ADDRESS_ZERO");
         require(_owner != address(0), "ADDRESS_ZERO");
 
-        __AccessControl_init();
+        __AccessControlEnumerable_init();
         __UUPSUpgradeable_init();
         _grantRole(MANAGER_ROLE, _manager);
         _grantRole(DEFAULT_ADMIN_ROLE, _owner);

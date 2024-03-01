@@ -3,7 +3,7 @@ pragma solidity 0.8.20;
 
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
-import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import "openzeppelin-contracts-upgradeable/contracts/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgradeable.sol";
 
@@ -11,7 +11,7 @@ import "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgrad
 /// @notice Implements cliff and linear vesting for token distribution.
 /// @dev Adapted from https://github.com/abdelhamidbakhta/token-vesting-contracts.
 /// @author XBorg
-contract TokenDistribution is AccessControlUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
+contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable, UUPSUpgradeable {
     using SafeERC20 for IERC20;
 
     struct VestingSchedule {
@@ -90,7 +90,7 @@ contract TokenDistribution is AccessControlUpgradeable, ReentrancyGuardUpgradeab
         require(_manager != address(0), "ADDRESS_ZERO");
         require(_owner != address(0), "ADDRESS_ZERO");
 
-        __AccessControl_init();
+        __AccessControlEnumerable_init();
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
         _grantRole(MANAGER_ROLE, _manager);
