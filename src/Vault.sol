@@ -272,6 +272,13 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         fundraises[_index].hardCap = _hardCap;
     }
 
+    /// @notice Set the name of a fundraise.
+    /// @param _index The index of the fundraise.
+    /// @param _name The name of the fundraise.
+    function setName(uint256 _index, string memory _name) external onlyRole(MANAGER_ROLE) {
+        fundraises[_index].name = _name;
+    }
+
     /// @notice Sets the parameters to open the fundraise to the public.
     /// @param _index The index of the fundraise.
     /// @param _enabled True if open to the public, false otherwise.

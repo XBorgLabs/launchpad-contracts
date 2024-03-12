@@ -147,6 +147,39 @@ contract VaultSetters is Base {
         vm.stopPrank();
     }
 
+    function test_setName_onlyOwner() public {
+        createAndDepositFundraise(100 * 10**18, false);
+
+        string memory finalName = "XBorg";
+
+        vm.startPrank(DEPLOYER);
+
+        bytes memory error = abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", address(DEPLOYER), keccak256("MANAGER_ROLE"));
+        vm.expectRevert(error);
+        vault.setName(0, finalName);
+
+        vm.stopPrank();
+    }
+
+    function test_setName() public {
+        createAndDepositFundraise(100 * 10**18, false);
+
+        string memory originalName = "Fundraise";
+        string memory updatedName = "XBorg";
+
+        vm.startPrank(MANAGER);
+
+        (string memory initialName,,,,,,,,,,) = vault.fundraises(0);
+        assertEq(initialName, originalName);
+
+        vault.setName(0, updatedName);
+
+        (string memory finalName,,,,,,,,,,) = vault.fundraises(0);
+        assertEq(finalName, updatedName);
+
+        vm.stopPrank();
+    }
+
     function test_setPublicFundraise_onlyOwner() public {
         createAndDepositFundraise(100 * 10**18, false);
 
