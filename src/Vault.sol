@@ -84,7 +84,7 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
     /// @param hardCap The maximum amount that can be raised
     /// @param startTime The time when the fundraise begins
     /// @param endTime The time when the fundraise ends
-    event FundraiseCreated(string name, address indexed token, address indexed beneficiary, uint256 softCap, uint256 hardCap, uint256 startTime, uint256 endTime);
+    event FundraiseCreated(uint256 indexed index, string name, address indexed token, address indexed beneficiary, uint256 softCap, uint256 hardCap, uint256 startTime, uint256 endTime);
 
     /// @notice Event emitted when a fundraise is completed and beneficiary claims the raised funds.
     /// @param index The index of the fundraise
@@ -180,7 +180,7 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
 
         totalFundraises = totalFundraises + 1;
 
-        emit FundraiseCreated(_name, _token, _beneficiary, _softCap, _hardCap, _startTime, _endTime);
+        emit FundraiseCreated(totalFundraises - 1, _name, _token, _beneficiary, _softCap, _hardCap, _startTime, _endTime);
     }
 
     /// @notice Deposit an amount with a whitelist signature.
