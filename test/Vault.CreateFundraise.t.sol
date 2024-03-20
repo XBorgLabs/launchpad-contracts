@@ -8,7 +8,7 @@ import {ERC1967Proxy} from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC19
 import "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract VaultCreateFundraise is Base {
-    event FundraiseCreated(string name, address indexed token, address indexed beneficiary, uint256 softCap, uint256 hardCap, uint256 startTime, uint256 endTime);
+    event FundraiseCreated(uint256 indexed index, string name, address indexed token, address indexed beneficiary, uint256 softCap, uint256 hardCap, uint256 startTime, uint256 endTime);
 
     function test_createFundraise_onlyOwner() public {
         vm.startPrank(DEPLOYER);
@@ -154,6 +154,7 @@ contract VaultCreateFundraise is Base {
     function test_createFundraise_event() public {
         vm.startPrank(MANAGER);
 
+        uint256 index = 0;
         string memory name = "Fundraise";
         uint256 softCap = 100 * 10**18;
         uint256 hardCap = 1000 * 10**18;
@@ -162,7 +163,7 @@ contract VaultCreateFundraise is Base {
         bool whitelistEnabled = true;
 
         vm.expectEmit();
-        emit FundraiseCreated(name, address(token), BENEFICIARY, softCap, hardCap, startTime, endTime);
+        emit FundraiseCreated(index, name, address(token), BENEFICIARY, softCap, hardCap, startTime, endTime);
 
         vault.createFundraise(name, address(token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
 
