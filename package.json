@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "lcov": "^1.16.0",
+    "solhint": "^4.0.0"
+  },
+  "scripts": {
+    "validate": "npx @openzeppelin/upgrades-core validate out/build-info",
+    "validate-upgrade": "yarn validate --contract src/TierManager.sol:TierManager && yarn validate --contract src/TokenDistribution.sol:TokenDistribution && yarn validate --contract src/Vault.sol:Vault"
+  }
+}

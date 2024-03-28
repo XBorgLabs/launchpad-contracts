@@ -1,0 +1,8 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# OZ Foundry Upgrades
+build_info = true
+extra_output = ["storageLayout"]
