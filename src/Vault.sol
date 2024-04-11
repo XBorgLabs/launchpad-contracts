@@ -384,12 +384,12 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         (,uint256 minAllocation, uint256 maxAllocation) = ITierManager(tierManager).getAllocation(_index, msg.sender);
         if (fundraises[_index].publicFundraise.enabled && maxAllocation == 0) {
             // Eligible to public
-            require(_amount >= fundraises[_index].publicFundraise.minAllocation, "AMOUNT_TOO_SMALL_PUBLIC");
-            require(_amount + contribution <= fundraises[_index].publicFundraise.maxAllocation, "AMOUNT_TOO_BIG_PUBLIC");
+            require(_amount + contribution >= fundraises[_index].publicFundraise.minAllocation, "UNDER_MIN_PUBLIC_ALLOCATION");
+            require(_amount + contribution <= fundraises[_index].publicFundraise.maxAllocation, "OVER_MAX_PUBLIC_ALLOCATION");
         } else {
             // Tiers allocation
-            require(_amount >= minAllocation, "AMOUNT_TOO_SMALL");
-            require(_amount + contribution <= maxAllocation, "AMOUNT_TOO_BIG");
+            require(_amount + contribution >= minAllocation, "UNDER_MIN_ALLOCATION");
+            require(_amount + contribution <= maxAllocation, "OVER_MAX_ALLOCATION");
         }
 
         fundraises[_index].currentAmountRaised += _amount;

@@ -144,7 +144,7 @@ contract VaultDeposit is Base {
         uint256 depositAmount = 10 * 10**18; // Tier is >= 42 && <= 69
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_SMALL"));
+        vm.expectRevert(bytes("UNDER_MIN_ALLOCATION"));
         vault.deposit(0, depositAmount);
 
         vm.stopPrank();
@@ -169,7 +169,7 @@ contract VaultDeposit is Base {
         uint256 depositAmount = 70 * 10**18; // Tier is >= 42 && <= 69
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_BIG"));
+        vm.expectRevert(bytes("OVER_MAX_ALLOCATION"));
         vault.deposit(0, depositAmount);
 
         vm.stopPrank();
@@ -195,7 +195,7 @@ contract VaultDeposit is Base {
         uint256 depositAmount = 1 * 10**17; // Tier is >= 1 && <= 10, depositing 0.1
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_SMALL_PUBLIC"));
+        vm.expectRevert(bytes("UNDER_MIN_PUBLIC_ALLOCATION"));
         vault.deposit(0, depositAmount);
 
         vm.stopPrank();
@@ -221,7 +221,7 @@ contract VaultDeposit is Base {
         uint256 depositAmount = 11 * 10**18; // Tier is >= 1 && <= 10
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_BIG_PUBLIC"));
+        vm.expectRevert(bytes("OVER_MAX_PUBLIC_ALLOCATION"));
         vault.deposit(0, depositAmount);
 
         vm.stopPrank();
@@ -249,7 +249,7 @@ contract VaultDeposit is Base {
         vault.deposit(0, depositAmount);
 
         token.approve(address(vault), depositAmount);
-        vm.expectRevert(bytes("AMOUNT_TOO_BIG_PUBLIC"));
+        vm.expectRevert(bytes("OVER_MAX_PUBLIC_ALLOCATION"));
         vault.deposit(0, depositAmount);
 
         vm.stopPrank();
@@ -282,6 +282,55 @@ contract VaultDeposit is Base {
         assertFalse(completed);
         assertEq(token.balanceOf(TESTER), (1000 * 10**18) - depositAmount);
         assertEq(vault.getFundraiseContribution(0, TESTER), depositAmount);
+
+        vm.stopPrank();
+    }
+
+    function test_depositMultipleTxs() public {
+        createFundraise(token);
+        deal(address(token), TESTER, 1000 * 10**18);
+
+        // Move forward in time
+        (,,,,, uint256 startTime,,,,,) = vault.fundraises(0);
+        vm.warp(startTime);
+
+        // Remove whitelist
+        vm.startPrank(MANAGER);
+        vault.setWhitelist(0, false);
+        vm.stopPrank();
+
+        // Deposit
+        vm.startPrank(TESTER);
+
+        uint256 depositAmount = 50 * 10**18; // Tier is >= 42 && <= 69
+        uint256 depositAmount2 = 5 * 10**18;
+        uint256 depositAmount3 = 10 * 10**18;
+        uint256 totalAmount = depositAmount + depositAmount2 + depositAmount3;
+
+        // Deposit 1 => 50
+        token.approve(address(vault), depositAmount);
+        vault.deposit(0, depositAmount);
+
+        // Deposit 2 = 5 => 55
+        token.approve(address(vault), depositAmount2);
+        vault.deposit(0, depositAmount2);
+
+        // Deposit 3 = 10 => 65
+        token.approve(address(vault), depositAmount3);
+        vault.deposit(0, depositAmount3);
+
+        // Deposit 4 = 10 => 75 > 69, Revert
+        token.approve(address(vault), depositAmount3);
+        vm.expectRevert(bytes("OVER_MAX_ALLOCATION"));
+        vault.deposit(0, depositAmount3);
+
+        (,,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
+
+        assertFalse(fundraiseWhitelistEnabled);
+        assertEq(currentAmountRaised, totalAmount);
+        assertFalse(completed);
+        assertEq(token.balanceOf(TESTER), (1000 * 10**18) - totalAmount);
+        assertEq(vault.getFundraiseContribution(0, TESTER), totalAmount);
 
         vm.stopPrank();
     }

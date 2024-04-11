@@ -136,7 +136,7 @@ contract VaultWhitelistDeposit is Base {
 
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_SMALL"));
+        vm.expectRevert(bytes("UNDER_MIN_ALLOCATION"));
         vault.whitelistDeposit(0, depositAmount, signature);
 
         vm.stopPrank();
@@ -163,7 +163,7 @@ contract VaultWhitelistDeposit is Base {
 
         token.approve(address(vault), depositAmount);
 
-        vm.expectRevert(bytes("AMOUNT_TOO_BIG"));
+        vm.expectRevert(bytes("OVER_MAX_ALLOCATION"));
         vault.whitelistDeposit(0, depositAmount, signature);
 
         vm.stopPrank();
