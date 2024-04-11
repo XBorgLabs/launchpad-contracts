@@ -143,7 +143,32 @@ contract TierManagerTiers is Base {
         vm.expectRevert(error);
         uint256[] memory tiers = new uint256[](1);
         tiers[0] = 0;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
+
+        vm.stopPrank();
+    }
+
+    function test_setFundraiseTiers_wrongToken() public {
+        // Create fundraise
+        createFundraise(token);
+
+        vm.startPrank(MANAGER);
+
+        // Create wrong tier
+        string memory name = "Tier 1";
+        uint256 balance = 100 * 10**18;
+        uint256 minAllocation = 42 * 10**18;
+        uint256 maxAllocation = 69 * 10**18;
+
+        tierManager.setTier(name, address(token), balance, 0, address(token2), minAllocation, maxAllocation);
+
+        assertEq(tierManager.totalTiers(), 3); // Two created by the fundraise and the one we created
+
+        uint256[] memory tiers = new uint256[](1);
+        tiers[0] = 2;
+
+        vm.expectRevert(bytes("WRONG_TOKEN"));
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }
@@ -153,13 +178,14 @@ contract TierManagerTiers is Base {
         vm.expectRevert();
         tierManager.fundraiseTiers(0, 0);
 
+        // Create two fundraises
+        createFundraise(token);
+        createFundraise(token);
+
         // Add tiers
         createDefaultTier();
         createDefaultTier();
         createDefaultTier();
-
-        // Check tiers creation
-        assertEq(tierManager.totalTiers(), 3);
 
         // Set Fundraise Tiers
         vm.startPrank(MANAGER);
@@ -168,29 +194,32 @@ contract TierManagerTiers is Base {
         uint256[] memory tiers = new uint256[](2);
         tiers[0] = 0;
         tiers[1] = 2;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
-        // Fundraise #54
-        uint256[] memory tiers54 = new uint256[](1);
-        tiers54[0] = 1;
-        tierManager.setFundraiseTiers(54, tiers54);
+        // Fundraise #1
+        uint256[] memory tiers1 = new uint256[](1);
+        tiers1[0] = 1;
+        tierManager.setFundraiseTiers(address(vault), 1, tiers1);
 
         vm.stopPrank();
 
         // Check tiers
         assertEq(tierManager.fundraiseTiers(0, 0), 0);
         assertEq(tierManager.fundraiseTiers(0, 1), 2);
-        assertEq(tierManager.fundraiseTiers(54, 0), 1);
+        assertEq(tierManager.fundraiseTiers(1, 0), 1);
 
         vm.expectRevert();
         tierManager.fundraiseTiers(0, 2);
         vm.expectRevert();
-        tierManager.fundraiseTiers(1, 0);
+        tierManager.fundraiseTiers(1, 1);
         vm.expectRevert();
-        tierManager.fundraiseTiers(54, 1);
+        tierManager.fundraiseTiers(2, 0);
     }
 
     function test_setFundraiseTiers_event() public {
+        // Create oen fundraise
+        createFundraise(token);
+
         // Create two tiers
         createDefaultTier();
         createDefaultTier();
@@ -204,7 +233,7 @@ contract TierManagerTiers is Base {
         vm.expectEmit();
         emit SetFundraiseTiers(0, tiers);
 
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }

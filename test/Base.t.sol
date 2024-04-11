@@ -154,7 +154,7 @@ abstract contract Base is Test {
         uint256[] memory tiers = new uint256[](2);
         tiers[0] = 0;
         tiers[1] = 1;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }

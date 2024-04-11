@@ -19,7 +19,7 @@ contract VaultGetters is Base {
         uint256 endTime = block.timestamp + 660;
         bool whitelistEnabled = true;
 
-        // Create fundraise
+        // Create two fundraises
         vault.createFundraise(fundraiseName, address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
 
         // Remove whitelist
@@ -28,23 +28,13 @@ contract VaultGetters is Base {
 
         // Add a tier
         string memory name = "Default Tier";
-        uint256 balance = 1 * 10**18;
-        uint256 minAllocation = 1 * 10**18;
-        uint256 maxAllocation = 10000 * 10**18;
 
-        // Token 1
-        tierManager.setTier(name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        // Set tier
+        tierManager.setTier(name, address(_token), 1 * 10**18, 0, address(_token), 1 * 10**18, 10000 * 10**18);
 
         uint256[] memory tiers = new uint256[](1);
-        tiers[0] = 0;
-        tierManager.setFundraiseTiers(0, tiers);
-
-        // Token 2
-        tierManager.setTier(name, address(token2), balance, 0, address(token), minAllocation, maxAllocation);
-
-        uint256[] memory tiers1 = new uint256[](1);
-        tiers1[0] = 1;
-        tierManager.setFundraiseTiers(1, tiers1);
+        tiers[0] = tierManager.totalTiers() - 1;
+        tierManager.setFundraiseTiers(address(vault), vault.totalFundraises() - 1, tiers);
 
         vm.stopPrank();
     }
@@ -99,6 +89,14 @@ contract VaultGetters is Base {
         assertEq(vault.getFundraiseContribution(1, TESTER), 65 * 10**18);
         assertEq(vault.getFundraiseContribution(0, DEPLOYER), 0);
         assertEq(vault.getFundraiseContribution(1, DEPLOYER), 50 * 10**18);
+    }
+
+    function test_getFundraiseTokenRaised() public {
+        createNewFundraise(token);
+        createNewFundraise(token2);
+
+        assertEq(address(token), vault.getFundraiseTokenRaised(0));
+        assertEq(address(token2), vault.getFundraiseTokenRaised(1));
     }
 
     function test_getFundraiseRunning() public {

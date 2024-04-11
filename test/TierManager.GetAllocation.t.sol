@@ -9,8 +9,27 @@ import "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./mock/Token.sol";
 
 contract TierManagerGetAllocation is Base {
+    function fixture_createFundraise(Token _token) internal {
+        vm.startPrank(MANAGER);
+
+        string memory name = "Fundraise";
+        uint256 softCap = 100 * 10**18;
+        uint256 hardCap = 1000 * 10**18;
+        uint256 startTime = block.timestamp + 60;
+        uint256 endTime = block.timestamp + 660;
+        bool whitelistEnabled = true;
+
+        // Create fundraise
+        vault.createFundraise(name, address(_token), BENEFICIARY, softCap, hardCap, startTime, endTime, whitelistEnabled);
+
+        vm.stopPrank();
+    }
+
     // @dev Adds three ERC20 tiers
     function fixture_getAllocation_addTiers() internal {
+        // Create Fundraise
+        fixture_createFundraise(token);
+
         // Add tiers
         vm.startPrank(MANAGER);
         string memory name = "Tier";
@@ -24,6 +43,9 @@ contract TierManagerGetAllocation is Base {
 
     // @dev Add tiers for ERC20, ERC721 and ERC1155
     function fixture_getAllocation_addAllErcTiers() internal {
+        // Create Fundraise
+        fixture_createFundraise(token);
+
         // Add tiers
         vm.startPrank(MANAGER);
         string memory name = "Tier";
@@ -48,7 +70,7 @@ contract TierManagerGetAllocation is Base {
         tiers[0] = 0;
         tiers[1] = 1;
         tiers[2] = 2;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }
@@ -65,7 +87,7 @@ contract TierManagerGetAllocation is Base {
         tiers[0] = 2;
         tiers[1] = 1;
         tiers[2] = 0;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }
@@ -82,7 +104,7 @@ contract TierManagerGetAllocation is Base {
         tiers[0] = 2;
         tiers[1] = 0;
         tiers[2] = 1;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }
@@ -100,7 +122,7 @@ contract TierManagerGetAllocation is Base {
         tiers[1] = 0;
         tiers[2] = 3;
         tiers[3] = 1;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         vm.stopPrank();
     }
@@ -112,6 +134,9 @@ contract TierManagerGetAllocation is Base {
 
     // @dev Test with single tier. User shouldn't be eligible.
     function test_getAllocation_singleTier_noTier() public {
+        // Create fundraise
+        fixture_createFundraise(token);
+
         // Add tiers
         createDefaultTier();
         assertEq(tierManager.totalTiers(), 1);
@@ -122,7 +147,7 @@ contract TierManagerGetAllocation is Base {
         // Fundraise #0
         uint256[] memory tiers = new uint256[](1);
         tiers[0] = 0;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         // Deal 10 tokens (less than min. 100 for tier 0)
         deal(address(token), address(DEPLOYER), 10 * 10**18);
@@ -139,6 +164,9 @@ contract TierManagerGetAllocation is Base {
 
     // @dev Test with single tier. User should be eligible to the only tier.
     function test_getAllocation_singleTier_tier0() public {
+        // Create fundraise
+        fixture_createFundraise(token);
+
         // Add tiers
         createDefaultTier();
         assertEq(tierManager.totalTiers(), 1);
@@ -149,7 +177,7 @@ contract TierManagerGetAllocation is Base {
         // Fundraise #0
         uint256[] memory tiers = new uint256[](1);
         tiers[0] = 0;
-        tierManager.setFundraiseTiers(0, tiers);
+        tierManager.setFundraiseTiers(address(vault), 0, tiers);
 
         // Deal 100 tokens (== min. 100 for tier 0)
         deal(address(token), address(DEPLOYER), 100 * 10**18);

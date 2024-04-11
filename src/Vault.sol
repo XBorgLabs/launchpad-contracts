@@ -325,6 +325,14 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         emit SetTierManager(tierManager);
     }
 
+    /// @notice Get the token that is raised for a fundraise.
+    /// @param _index The index of the fundraise.
+    /// @return The address of the token.
+    function getFundraiseTokenRaised(uint256 _index) external view returns (address) {
+        Fundraise storage fundraise = fundraises[_index];
+        return fundraise.token;
+    }
+
     /// @notice Get the deposit of an address.
     /// @param _index The index of the fundraise.
     /// @param _contributor The address that deposited.

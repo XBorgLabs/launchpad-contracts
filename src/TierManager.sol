@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import "./interfaces/IVault.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
@@ -23,7 +24,7 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
         uint256 tierBalanceRequirement;
         // ERC1155 only, id to hold, default is zero
         uint256 tierIdRequirement;
-        // Fundraise token
+        // Fundraise token (that can be deposited)
         address allocationToken;
         // Min allocation
         uint256 minAllocation;
@@ -149,9 +150,13 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
 
     /// @notice Sets the tier relevant for a fundraise.
     /// @dev It is recommended to put lowest tiers first and higher tiers at the end.
+    /// @param _vault The vault where the fundraise is happening.
     /// @param _fundraiseIndex The fundraise id in the Vault contract.
     /// @param _tierIds The ids of the tiers that should apply for this fundraise.
-    function setFundraiseTiers(uint256 _fundraiseIndex, uint256[] calldata _tierIds) external onlyRole(MANAGER_ROLE) {
+    function setFundraiseTiers(address _vault, uint256 _fundraiseIndex, uint256[] calldata _tierIds) external onlyRole(MANAGER_ROLE) {
+        for (uint256 i = 0; i < _tierIds.length; ++i) {
+            require(IVault(_vault).getFundraiseTokenRaised(_fundraiseIndex) == tiers[_tierIds[i]].allocationToken, "WRONG_TOKEN");
+        }
         fundraiseTiers[_fundraiseIndex] = _tierIds;
         emit SetFundraiseTiers(_fundraiseIndex, _tierIds);
     }
