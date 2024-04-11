@@ -162,18 +162,20 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         require(_endTime >= block.timestamp, "WRONG_TIME");
         require(_startTime < _endTime, "WRONG_TIME");
 
-        fundraises[totalFundraises].name = _name;
-        fundraises[totalFundraises].token = _token;
-        fundraises[totalFundraises].beneficiary = _beneficiary;
-        fundraises[totalFundraises].softCap = _softCap;
-        fundraises[totalFundraises].hardCap = _hardCap;
-        fundraises[totalFundraises].startTime = _startTime;
-        fundraises[totalFundraises].endTime = _endTime;
-        fundraises[totalFundraises].whitelistEnabled = _whitelistEnabled;
+        uint256 fundraiseIndex = totalFundraises;
 
-        totalFundraises = totalFundraises + 1;
+        fundraises[fundraiseIndex].name = _name;
+        fundraises[fundraiseIndex].token = _token;
+        fundraises[fundraiseIndex].beneficiary = _beneficiary;
+        fundraises[fundraiseIndex].softCap = _softCap;
+        fundraises[fundraiseIndex].hardCap = _hardCap;
+        fundraises[fundraiseIndex].startTime = _startTime;
+        fundraises[fundraiseIndex].endTime = _endTime;
+        fundraises[fundraiseIndex].whitelistEnabled = _whitelistEnabled;
 
-        emit FundraiseCreated(totalFundraises - 1, _name, _token, _beneficiary, _softCap, _hardCap, _startTime, _endTime);
+        totalFundraises = fundraiseIndex + 1;
+
+        emit FundraiseCreated(fundraiseIndex, _name, _token, _beneficiary, _softCap, _hardCap, _startTime, _endTime);
     }
 
     /// @notice Deposit an amount with a whitelist signature.
