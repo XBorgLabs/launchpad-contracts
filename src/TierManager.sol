@@ -88,9 +88,9 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
 
         require(relevantTiersLength > 0, "NO_TIERS");
 
-        uint256 finalTierIndex = 0;
-        uint256 minAllocation = 0;
-        uint256 maxAllocation = 0;
+        uint256 finalTierIndex;
+        uint256 minAllocation;
+        uint256 maxAllocation;
 
         for (uint256 i = 0; i < relevantTiersLength; i++) {
             uint256 tierIndex = relevantTiers[i];

@@ -170,11 +170,6 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         fundraises[totalFundraises].startTime = _startTime;
         fundraises[totalFundraises].endTime = _endTime;
         fundraises[totalFundraises].whitelistEnabled = _whitelistEnabled;
-        fundraises[totalFundraises].publicFundraise.enabled = false;
-        fundraises[totalFundraises].publicFundraise.minAllocation = 0;
-        fundraises[totalFundraises].publicFundraise.maxAllocation = 0;
-        fundraises[totalFundraises].currentAmountRaised = 0;
-        fundraises[totalFundraises].completed = false;
 
         totalFundraises = totalFundraises + 1;
 
