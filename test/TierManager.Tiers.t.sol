@@ -24,6 +24,48 @@ contract TierManagerTiers is Base {
         vm.stopPrank();
     }
 
+    function test_setTier_addressZeroTierToken() public {
+        vm.startPrank(MANAGER);
+
+        string memory name = "Tier 0";
+        uint256 balance = 100 * 10**18;
+        uint256 minAllocation = 42 * 10**18;
+        uint256 maxAllocation = 69 * 10**18;
+
+        vm.expectRevert(bytes("ADDRESS_ZERO"));
+        tierManager.setTier(name, address(0), balance, 0, address(token), minAllocation, maxAllocation);
+
+        vm.stopPrank();
+    }
+
+    function test_setTier_addressZeroAllocationToken() public {
+        vm.startPrank(MANAGER);
+
+        string memory name = "Tier 0";
+        uint256 balance = 100 * 10**18;
+        uint256 minAllocation = 42 * 10**18;
+        uint256 maxAllocation = 69 * 10**18;
+
+        vm.expectRevert(bytes("ADDRESS_ZERO"));
+        tierManager.setTier(name, address(token), balance, 0, address(0), minAllocation, maxAllocation);
+
+        vm.stopPrank();
+    }
+
+    function test_setTier_wrongParams() public {
+        vm.startPrank(MANAGER);
+
+        string memory name = "Tier 0";
+        uint256 balance = 100 * 10**18;
+        uint256 minAllocation = 42 * 10**18;
+        uint256 maxAllocation = 69 * 10**18;
+
+        vm.expectRevert(bytes("WRONG_PARAMS"));
+        tierManager.setTier(name, address(token), balance, 0, address(token), maxAllocation, minAllocation);
+
+        vm.stopPrank();
+    }
+
     function test_setTier() public {
         assertEq(tierManager.totalTiers(), 0);
 

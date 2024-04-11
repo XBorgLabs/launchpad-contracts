@@ -191,6 +191,9 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     /// @param _minAllocation The minimum allocation in the fundraise token.
     /// @param _maxAllocation The maximum allocation in the fundraise token.
     function _setTier(uint256 _index, string calldata _name, address _tierToken, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) internal {
+        require(_tierToken != address(0), "ADDRESS_ZERO");
+        require(_allocationToken != address(0), "ADDRESS_ZERO");
+        require(_maxAllocation >= _minAllocation, "WRONG_PARAMS");
         tiers[_index] = Tier(_name, _tierToken, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
     }
 
