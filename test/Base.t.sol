@@ -113,7 +113,7 @@ abstract contract Base is Test {
         uint256 minAllocation = 42 * 10**18;
         uint256 maxAllocation = 69 * 10**18;
 
-        tierManager.setTier(name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }
@@ -126,7 +126,7 @@ abstract contract Base is Test {
         uint256 minAllocation = 50 * 10**18;
         uint256 maxAllocation = 250 * 10**18;
 
-        tierManager.setTier(name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }

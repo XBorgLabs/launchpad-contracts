@@ -14,11 +14,15 @@ import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable
 contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     using SafeERC20 for IERC20;
 
+    enum TokenType { ERC20, ERC721, ERC1155 }
+
     struct Tier {
         // Name
         string name;
         // Token to hold
         address tierToken;
+        // Type of the token to hold
+        TokenType tierTokenType;
         // Balance to hold
         uint256 tierBalanceRequirement;
         // ERC1155 only, id to hold, default is zero
@@ -95,13 +99,14 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
         for (uint256 i = 0; i < relevantTiersLength; i++) {
             uint256 tierIndex = relevantTiers[i];
             address tierToken = tiers[tierIndex].tierToken;
+            TokenType tierTokenType = tiers[tierIndex].tierTokenType;
             uint256 tokenBalance = 0;
 
-            if (_isERC20(tierToken)) {
+            if (tierTokenType == TokenType.ERC20) {
                 tokenBalance = IERC20(tierToken).balanceOf(_depositAddress);
-            } else if (_isERC721(tierToken)) {
+            } else if (tierTokenType == TokenType.ERC721) {
                 tokenBalance = IERC721(tierToken).balanceOf(_depositAddress);
-            } else if (_isERC1155(tierToken)) {
+            } else if (tierTokenType == TokenType.ERC1155) {
                 tokenBalance = IERC1155(tierToken).balanceOf(_depositAddress, tiers[tierIndex].tierIdRequirement);
             }
 
@@ -121,13 +126,14 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     /// @notice Creates a new tier.
     /// @param _name The name of the tier.
     /// @param _tierToken The token that the user must hold.
+    /// @param _tierTokenType The standard that the token conforms to.
     /// @param _tierBalance The amount of {_tierToken} that the user must hold.
     /// @param _tierIdRequirement Only for ERC1155 {tierToken}, the id to own. Default should be 0.
     /// @param _allocationToken The token that is raised, representing the unit of min and max allocation.
     /// @param _minAllocation The minimum allocation in the fundraise token.
     /// @param _maxAllocation The maximum allocation in the fundraise token.
-    function setTier(string calldata _name, address _tierToken, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) external onlyRole(MANAGER_ROLE) {
-        _setTier(totalTiers, _name, _tierToken, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
+    function setTier(string calldata _name, address _tierToken, TokenType _tierTokenType, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) external onlyRole(MANAGER_ROLE) {
+        _setTier(totalTiers, _name, _tierToken, _tierTokenType, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
         totalTiers = totalTiers + 1;
         emit SetTier(totalTiers - 1);
     }
@@ -136,14 +142,15 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     /// @param _index The index of the tier.
     /// @param _name The name of the tier.
     /// @param _tierToken The token that the user must hold.
+    /// @param _tierTokenType The standard that the token conforms to.
     /// @param _tierBalance The amount of {_tierToken} that the user must hold.
     /// @param _tierIdRequirement Only for ERC1155 {tierToken}, the id to own. Default should be 0.
     /// @param _allocationToken The token that is raised, representing the unit of min and max allocation.
     /// @param _minAllocation The minimum allocation in the fundraise token.
     /// @param _maxAllocation The maximum allocation in the fundraise token.
-    function updateTier(uint256 _index, string calldata _name, address _tierToken, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) external onlyRole(MANAGER_ROLE) {
+    function updateTier(uint256 _index, string calldata _name, address _tierToken, TokenType _tierTokenType, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) external onlyRole(MANAGER_ROLE) {
         require(_index < totalTiers, "WRONG_INDEX");
-        _setTier(_index, _name, _tierToken, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
+        _setTier(_index, _name, _tierToken, _tierTokenType, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
         emit UpdatedTier(_index);
     }
 
@@ -184,47 +191,17 @@ contract TierManager is AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     /// @param _index The index to set
     /// @param _name The name of the tier.
     /// @param _tierToken The token that the user must hold.
+    /// @param _tierTokenType The standard that the token conforms too.
     /// @param _tierBalance The amount of {_tierToken} that the user must hold.
     /// @param _tierIdRequirement Only for ERC1155 {tierToken}, the id to own. Default should be 0.
     /// @param _allocationToken The token that is raised, representing the unit of min and max allocation.
     /// @param _minAllocation The minimum allocation in the fundraise token.
     /// @param _maxAllocation The maximum allocation in the fundraise token.
-    function _setTier(uint256 _index, string calldata _name, address _tierToken, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) internal {
+    function _setTier(uint256 _index, string calldata _name, address _tierToken, TokenType _tierTokenType, uint256 _tierBalance, uint256 _tierIdRequirement, address _allocationToken, uint256 _minAllocation, uint256 _maxAllocation) internal {
         require(_tierToken != address(0), "ADDRESS_ZERO");
         require(_allocationToken != address(0), "ADDRESS_ZERO");
         require(_maxAllocation >= _minAllocation, "WRONG_PARAMS");
-        tiers[_index] = Tier(_name, _tierToken, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
-    }
-
-    /// @notice Tries to check if a token is an ERC20.
-    /// @dev We use totalSupply as it's not available on ERC721.
-    /// @param _tokenAddress The address of the token.
-    function _isERC20(address _tokenAddress) internal view returns (bool) {
-        try IERC20(_tokenAddress).totalSupply() returns (uint256) {
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
-    /// @notice Tries to check if a token is an ERC721.
-    /// @param _tokenAddress The address of the token.
-    function _isERC721(address _tokenAddress) internal view returns (bool) {
-        try IERC721(_tokenAddress).balanceOf(address(1)) returns (uint256) {
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
-    /// @notice Tries to check if a token is an ERC1155.
-    /// @param _tokenAddress The address of the token.
-    function _isERC1155(address _tokenAddress) internal view returns (bool) {
-        try IERC1155(_tokenAddress).balanceOf(address(1), 0) returns (uint256) {
-            return true;
-        } catch {
-            return false;
-        }
+        tiers[_index] = Tier(_name, _tierToken, _tierTokenType, _tierBalance, _tierIdRequirement, _allocationToken, _minAllocation, _maxAllocation);
     }
 
     /// @inheritdoc UUPSUpgradeable

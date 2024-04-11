@@ -19,7 +19,7 @@ contract TierManagerTiers is Base {
 
         bytes memory error = abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", address(DEPLOYER), keccak256("MANAGER_ROLE"));
         vm.expectRevert(error);
-        tierManager.setTier("Tier 0", address(token), 0, 0, address(token), 0, 0);
+        tierManager.setTier("Tier 0", address(token), TierManager.TokenType.ERC20, 0, 0, address(token), 0, 0);
 
         vm.stopPrank();
     }
@@ -33,7 +33,7 @@ contract TierManagerTiers is Base {
         uint256 maxAllocation = 69 * 10**18;
 
         vm.expectRevert(bytes("ADDRESS_ZERO"));
-        tierManager.setTier(name, address(0), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(0), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }
@@ -47,7 +47,7 @@ contract TierManagerTiers is Base {
         uint256 maxAllocation = 69 * 10**18;
 
         vm.expectRevert(bytes("ADDRESS_ZERO"));
-        tierManager.setTier(name, address(token), balance, 0, address(0), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(0), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }
@@ -61,7 +61,7 @@ contract TierManagerTiers is Base {
         uint256 maxAllocation = 69 * 10**18;
 
         vm.expectRevert(bytes("WRONG_PARAMS"));
-        tierManager.setTier(name, address(token), balance, 0, address(token), maxAllocation, minAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), maxAllocation, minAllocation);
 
         vm.stopPrank();
     }
@@ -76,11 +76,11 @@ contract TierManagerTiers is Base {
         uint256 minAllocation = 42 * 10**18;
         uint256 maxAllocation = 69 * 10**18;
 
-        tierManager.setTier(name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
 
-        (string memory tierName, address tierToken, uint256 tierBalance, uint256 tierIdRequirement, address allocationToken, uint256 tierMinAllocation, uint256 tierMaxAllocation) = tierManager.tiers(0);
+        (string memory tierName, address tierToken,, uint256 tierBalance, uint256 tierIdRequirement, address allocationToken, uint256 tierMinAllocation, uint256 tierMaxAllocation) = tierManager.tiers(0);
         assertEq(tierName, name);
         assertEq(tierToken, address(token));
         assertEq(tierBalance, balance);
@@ -103,7 +103,7 @@ contract TierManagerTiers is Base {
         vm.expectEmit();
         emit SetTier(0);
 
-        tierManager.setTier(name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }
@@ -113,7 +113,7 @@ contract TierManagerTiers is Base {
 
         bytes memory error = abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", address(DEPLOYER), keccak256("MANAGER_ROLE"));
         vm.expectRevert(error);
-        tierManager.updateTier(0, "Tier 0", address(token), 0, 0, address(token), 0, 0);
+        tierManager.updateTier(0, "Tier 0", address(token), TierManager.TokenType.ERC20, 0, 0, address(token), 0, 0);
 
         vm.stopPrank();
     }
@@ -122,7 +122,7 @@ contract TierManagerTiers is Base {
         vm.startPrank(MANAGER);
 
         vm.expectRevert(bytes("WRONG_INDEX"));
-        tierManager.updateTier(1, "Tier 0", address(token), 0, 0, address(token), 0, 0);
+        tierManager.updateTier(1, "Tier 0", address(token), TierManager.TokenType.ERC20, 0, 0, address(token), 0, 0);
 
         vm.stopPrank();
     }
@@ -142,16 +142,17 @@ contract TierManagerTiers is Base {
         uint256 minAllocation = 41 * 10**18;
         uint256 maxAllocation = 68 * 10**18;
 
-        tierManager.updateTier(0, name, address(token), balance, 1, address(token2), minAllocation, maxAllocation);
+        tierManager.updateTier(0, name, address(token), TierManager.TokenType.ERC721, balance, 1, address(token2), minAllocation, maxAllocation);
 
         vm.stopPrank();
 
         // Post-conditions
         assertEq(tierManager.totalTiers(), 1);
 
-        (string memory updatedTierName, address updatedTierToken, uint256 updatedTierBalance, uint256 updatedTierIdRequirement, address updatedAllocationToken, uint256 updatedTierMinAllocation, uint256 updatedTierMaxAllocation) = tierManager.tiers(0);
+        (string memory updatedTierName, address updatedTierToken, TierManager.TokenType updatedTokenType, uint256 updatedTierBalance, uint256 updatedTierIdRequirement, address updatedAllocationToken, uint256 updatedTierMinAllocation, uint256 updatedTierMaxAllocation) = tierManager.tiers(0);
         assertEq(updatedTierName, name);
         assertEq(updatedTierToken, address(token));
+        assertEq(uint256(updatedTokenType), uint256(TierManager.TokenType.ERC721));
         assertEq(updatedTierBalance, balance);
         assertEq(updatedTierIdRequirement, 1);
         assertEq(updatedAllocationToken, address(token2));
@@ -173,7 +174,7 @@ contract TierManagerTiers is Base {
         vm.expectEmit();
         emit UpdatedTier(0);
 
-        tierManager.updateTier(0, name, address(token), balance, 0, address(token), minAllocation, maxAllocation);
+        tierManager.updateTier(0, name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token), minAllocation, maxAllocation);
 
         vm.stopPrank();
     }
@@ -202,7 +203,7 @@ contract TierManagerTiers is Base {
         uint256 minAllocation = 42 * 10**18;
         uint256 maxAllocation = 69 * 10**18;
 
-        tierManager.setTier(name, address(token), balance, 0, address(token2), minAllocation, maxAllocation);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, balance, 0, address(token2), minAllocation, maxAllocation);
 
         assertEq(tierManager.totalTiers(), 3); // Two created by the fundraise and the one we created
 

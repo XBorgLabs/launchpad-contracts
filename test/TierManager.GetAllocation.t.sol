@@ -33,9 +33,9 @@ contract TierManagerGetAllocation is Base {
         // Add tiers
         vm.startPrank(MANAGER);
         string memory name = "Tier";
-        tierManager.setTier(name, address(token), 10 * 10**18, 0, address(token), 1, 100);
-        tierManager.setTier(name, address(token), 100 * 10**18, 0, address(token), 10, 1000);
-        tierManager.setTier(name, address(token), 1000 * 10**18, 0, address(token), 100, 10000);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, 10 * 10**18, 0, address(token), 1, 100);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, 100 * 10**18, 0, address(token), 10, 1000);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, 1000 * 10**18, 0, address(token), 100, 10000);
         vm.stopPrank();
 
         assertEq(tierManager.totalTiers(), 3);
@@ -49,10 +49,10 @@ contract TierManagerGetAllocation is Base {
         // Add tiers
         vm.startPrank(MANAGER);
         string memory name = "Tier";
-        tierManager.setTier(name, address(token), 10 * 10**18, 0, address(token), 1, 100);
-        tierManager.setTier(name, address(erc721Token), 100, 0, address(token), 10, 1000);
-        tierManager.setTier(name, address(erc1155Token), 5, 0, address(token), 100, 10000);
-        tierManager.setTier(name, address(erc1155Token), 2, 1, address(token), 1000, 100000);
+        tierManager.setTier(name, address(token), TierManager.TokenType.ERC20, 10 * 10**18, 0, address(token), 1, 100);
+        tierManager.setTier(name, address(erc721Token), TierManager.TokenType.ERC721, 100, 0, address(token), 10, 1000);
+        tierManager.setTier(name, address(erc1155Token), TierManager.TokenType.ERC1155, 5, 0, address(token), 100, 10000);
+        tierManager.setTier(name, address(erc1155Token), TierManager.TokenType.ERC1155, 2, 1, address(token), 1000, 100000);
         vm.stopPrank();
 
         assertEq(tierManager.totalTiers(), 4);

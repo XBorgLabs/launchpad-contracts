@@ -3,6 +3,7 @@ pragma solidity 0.8.20;
 
 import "forge-std/Test.sol";
 import {Base} from "./Base.t.sol";
+import {TierManager} from "../src/TierManager.sol";
 import {Vault} from "../src/Vault.sol";
 import {Token} from "./mock/Token.sol";
 import {ERC1967Proxy} from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -30,7 +31,7 @@ contract VaultGetters is Base {
         string memory name = "Default Tier";
 
         // Set tier
-        tierManager.setTier(name, address(_token), 1 * 10**18, 0, address(_token), 1 * 10**18, 10000 * 10**18);
+        tierManager.setTier(name, address(_token), TierManager.TokenType.ERC20, 1 * 10**18, 0, address(_token), 1 * 10**18, 10000 * 10**18);
 
         uint256[] memory tiers = new uint256[](1);
         tiers[0] = tierManager.totalTiers() - 1;
