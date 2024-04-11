@@ -10,6 +10,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 /// @author XBorg
 contract XBorg is ERC20, ERC20Burnable, ERC20Permit {
     constructor() ERC20("XBorg", "XBG") ERC20Permit("XBorg") {
-        _mint(msg.sender, 1000000000 * 10 ** decimals());
+        _mint(msg.sender, 1_000_000_000 * 10 ** decimals());
     }
 }
