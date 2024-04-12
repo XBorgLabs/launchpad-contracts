@@ -115,6 +115,21 @@ contract VaultGetters is Base {
         assertFalse(vault.getFundraiseRunning(0));
     }
 
+    function test_getFundraiseStarted() public {
+        createFundraise(token);
+
+        // Not started
+        assertFalse(vault.getFundraiseStarted(0));
+
+        // Start
+        startFundraise(0);
+        assertTrue(vault.getFundraiseStarted(0));
+
+        // End
+        endFundraise(0);
+        assertTrue(vault.getFundraiseStarted(0));
+    }
+
     function test_getFundraiseSuccessful() public {
         createNewFundraise(token);
 

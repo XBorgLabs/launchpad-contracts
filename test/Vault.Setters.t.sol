@@ -96,7 +96,7 @@ contract VaultSetters is Base {
     }
 
     function test_setCap_onlyOwner() public {
-        createAndDepositFundraise(100 * 10**18, false);
+        createFundraise(token);
 
         vm.startPrank(DEPLOYER);
 
@@ -107,8 +107,19 @@ contract VaultSetters is Base {
         vm.stopPrank();
     }
 
-    function test_setCap_wrongCaps() public {
+    function test_setCap_fundraiseStarted() public {
         createAndDepositFundraise(100 * 10**18, false);
+
+        vm.startPrank(MANAGER);
+
+        vm.expectRevert(bytes("FUNDRAISE_STARTED"));
+        vault.setCap(0, 1 * 10**18, 20000 * 10**18);
+
+        vm.stopPrank();
+    }
+
+    function test_setCap_wrongCaps() public {
+        createFundraise(token);
 
         vm.startPrank(MANAGER);
 
@@ -118,19 +129,8 @@ contract VaultSetters is Base {
         vm.stopPrank();
     }
 
-    function test_setCap_capTooSmall() public {
-        createAndDepositFundraise(100 * 10**18, false);
-
-        vm.startPrank(MANAGER);
-
-        vm.expectRevert(bytes("CAP_TOO_SMALL"));
-        vault.setCap(0, 10 * 10**18, 20 * 10**18);
-
-        vm.stopPrank();
-    }
-
     function test_setCap() public {
-        createAndDepositFundraise(100 * 10**18, false);
+        createFundraise(token);
 
         vm.startPrank(MANAGER);
 
@@ -224,7 +224,7 @@ contract VaultSetters is Base {
     }
 
     function test_setTime_onlyOwner() public {
-        createAndDepositFundraise(100 * 10**18, false);
+        createFundraise(token);
 
         vm.startPrank(DEPLOYER);
 
@@ -235,20 +235,31 @@ contract VaultSetters is Base {
         vm.stopPrank();
     }
 
-    function test_setTime_wrongEndTime() public {
+    function test_setTime_fundraiseStarted() public {
         createAndDepositFundraise(100 * 10**18, false);
 
         vm.startPrank(MANAGER);
-        vm.warp(500);
 
-        vm.expectRevert(bytes("WRONG_TIME"));
+        vm.expectRevert(bytes("FUNDRAISE_STARTED"));
         vault.setTime(0, 10, 200);
 
         vm.stopPrank();
     }
 
+    function test_setTime_wrongEndTime() public {
+        createFundraise(token);
+
+        vm.startPrank(MANAGER);
+        vm.warp(50);
+
+        vm.expectRevert(bytes("WRONG_TIME"));
+        vault.setTime(0, 10, 40);
+
+        vm.stopPrank();
+    }
+
     function test_setTime_wrongStartEndTime() public {
-        createAndDepositFundraise(100 * 10**18, false);
+        createFundraise(token);
 
         vm.startPrank(MANAGER);
 
@@ -259,7 +270,7 @@ contract VaultSetters is Base {
     }
 
     function test_setTime() public {
-        createAndDepositFundraise(100 * 10**18, false);
+        createFundraise(token);
 
         vm.startPrank(MANAGER);
 

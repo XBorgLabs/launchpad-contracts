@@ -261,8 +261,8 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
     /// @param _softCap The minimum amount to raise to consider the fundraise successful.
     /// @param _hardCap The maximum amount that can be raised.
     function setCap(uint256 _index, uint256 _softCap, uint256 _hardCap) external onlyRole(MANAGER_ROLE) {
+        require(!getFundraiseStarted(_index), "FUNDRAISE_STARTED");
         require(_softCap < _hardCap, "WRONG_CAPS");
-        require(_hardCap >= fundraises[_index].currentAmountRaised, "CAP_TOO_SMALL");
         fundraises[_index].softCap = _softCap;
         fundraises[_index].hardCap = _hardCap;
     }
@@ -291,6 +291,7 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
     /// @param _startTime The time when the deposits open.
     /// @param _endTime The time when the deposits end.
     function setTime(uint256 _index, uint256 _startTime, uint256 _endTime) external onlyRole(MANAGER_ROLE) {
+        require(!getFundraiseStarted(_index), "FUNDRAISE_STARTED");
         require(_endTime >= block.timestamp, "WRONG_TIME");
         require(_startTime < _endTime, "WRONG_TIME");
         fundraises[_index].startTime = _startTime;
@@ -342,6 +343,13 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
     /// @return True if deposits are open, otherwise false.
     function getFundraiseRunning(uint256 _index) public view returns (bool) {
         return fundraises[_index].startTime <= block.timestamp && fundraises[_index].endTime >= block.timestamp;
+    }
+
+    /// @notice Get if a fundraise started.
+    /// @param _index The index of the fundraise.
+    /// @return True if it started, otherwise false.
+    function getFundraiseStarted(uint256 _index) public view returns (bool) {
+        return fundraises[_index].startTime <= block.timestamp;
     }
 
     /// @notice Get if a fundraise raised more than the soft cap.
