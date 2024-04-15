@@ -56,9 +56,9 @@ This is the output:
 ```
 | File                                    | % Lines           | % Statements      | % Branches       | % Funcs         |
 |-----------------------------------------|-------------------|-------------------|------------------|-----------------|
-| src/TierManager.sol                     | 100.00% (46/46)   | 100.00% (53/53)   | 86.36% (19/22)   | 100.00% (12/12) |
+| src/TierManager.sol                     | 100.00% (49/49)   | 100.00% (58/58)   | 90.00% (27/30)   | 100.00% (9/9)   |
 | src/TokenDistribution.sol               | 100.00% (69/69)   | 100.00% (90/90)   | 100.00% (34/34)  | 100.00% (21/21) |
-| src/Vault.sol                           | 100.00% (106/106) | 100.00% (114/114) | 100.00% (78/78)  | 100.00% (23/23) |
+| src/Vault.sol                           | 100.00% (109/109) | 100.00% (118/118) | 100.00% (80/80)  | 100.00% (26/26) |
 
 ```
 
@@ -68,9 +68,9 @@ Also, it doesn't hit on three branches:
 
 ```
 Uncovered for src/TierManager.sol:
-- Branch (branch: 3, path: 0) (location: source ID 76, line 100, chars 3962-4079, hits: 0)
-- Branch (branch: 4, path: 0) (location: source ID 76, line 102, chars 4085-4204, hits: 0)
-- Branch (branch: 5, path: 0) (location: source ID 76, line 104, chars 4210-4367, hits: 0)
+- Branch (branch: 3, path: 0) (location: source ID 76, line 105, chars 4129-4259, hits: 0)
+- Branch (branch: 4, path: 0) (location: source ID 76, line 107, chars 4265-4397, hits: 0)
+- Branch (branch: 5, path: 0) (location: source ID 76, line 109, chars 4403-4573, hits: 0)
 ```
 
 This is also a limitation of foundry, from the tests in `test/TierManager.GetAllocation.t.sol`, we confirm that the branches were hit. See [foundry#3497](https://github.com/foundry-rs/foundry/issues/3497).
