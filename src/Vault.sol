@@ -38,6 +38,8 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         PublicFundraise publicFundraise;
         // Current amount raised
         uint256 currentAmountRaised;
+        // Contributors
+        address[] contributors;
         // Contributions
         mapping(address => uint256) contributions;
         // Completed (Hard cap withdrawn)
@@ -321,6 +323,14 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         emit SetTierManager(tierManager);
     }
 
+    /// @notice Get all the participants of a fundraise.
+    /// @param _index The index of the fundraise.
+    /// @return The list of depositors.
+    function getFundraiseContributors(uint256 _index) external view returns (address[] memory) {
+        Fundraise storage fundraise = fundraises[_index];
+        return fundraise.contributors;
+    }
+
     /// @notice Get the token that is raised for a fundraise.
     /// @param _index The index of the fundraise.
     /// @return The address of the token.
@@ -401,6 +411,7 @@ contract Vault is AccessControlEnumerableUpgradeable, ReentrancyGuardUpgradeable
         }
 
         fundraises[_index].currentAmountRaised += _amount;
+        fundraises[_index].contributors.push(msg.sender);
         fundraises[_index].contributions[msg.sender] += _amount;
 
         IERC20(fundraises[_index].token).safeTransferFrom(msg.sender, address(this), _amount);

@@ -276,12 +276,15 @@ contract VaultDeposit is Base {
         vault.deposit(0, depositAmount);
 
         (,,,,,,, bool fundraiseWhitelistEnabled,, uint256 currentAmountRaised, bool completed) = vault.fundraises(0);
+        address[] memory contributors = vault.getFundraiseContributors(0);
 
         assertFalse(fundraiseWhitelistEnabled);
         assertEq(currentAmountRaised, depositAmount);
         assertFalse(completed);
         assertEq(token.balanceOf(TESTER), (1000 * 10**18) - depositAmount);
         assertEq(vault.getFundraiseContribution(0, TESTER), depositAmount);
+        assertEq(contributors.length, 1);
+        assertEq(contributors[0], TESTER);
 
         vm.stopPrank();
     }

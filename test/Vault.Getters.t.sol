@@ -66,6 +66,37 @@ contract VaultGetters is Base {
         vm.stopPrank();
     }
 
+    function test_getFundraiseContributors() public {
+        // Create 2 fundraises
+        createNewFundraise(token);
+        startFundraise(0);
+        createNewFundraise(token2);
+        startFundraise(1);
+
+        // Tester deposits in both
+        deal(address(token), TESTER, 100 * 10**18);
+        deal(address(token2), TESTER, 100 * 10**18);
+        uint256 depositAmountTesterToken = 100 * 10**18;
+        uint256 depositAmountTesterToken2 = 65 * 10**18;
+        depositFundraise(0, token, TESTER, depositAmountTesterToken);
+        depositFundraise(1, token2, TESTER, depositAmountTesterToken2);
+
+        // Deployer only deposits in the second one
+        deal(address(token2), DEPLOYER, 50 * 10**18);
+        uint256 depositAmountDeployerToken = 50 * 10**18;
+        depositFundraise(1, token2, DEPLOYER, depositAmountDeployerToken);
+
+        address[] memory contributors0 = vault.getFundraiseContributors(0);
+        address[] memory contributors1 = vault.getFundraiseContributors(1);
+
+        assertEq(contributors0.length, 1);
+        assertEq(contributors1.length, 2);
+
+        assertEq(contributors0[0], TESTER);
+        assertEq(contributors1[0], TESTER);
+        assertEq(contributors1[1], DEPLOYER);
+    }
+
     function test_getFundraiseContribution() public {
         // Create 2 fundraises
         createNewFundraise(token);
