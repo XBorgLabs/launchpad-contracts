@@ -9,7 +9,7 @@ import {ERC1967Proxy} from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC19
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract TokenDistributionCreateVestingSchedule is Base {
-    event VestingScheduleCreated(address indexed token, address indexed beneficiary, uint256 start, uint256 cliff, uint256 duration, uint256 indexed amount);
+    event VestingScheduleCreated(bytes32 indexed vestingScheduleId, address token, address indexed beneficiary, uint256 start, uint256 cliff, uint256 duration, uint256 indexed amount);
 
     function test_createVestingSchedule_hasTokens() public {
         uint256 contractBalance = IERC20(token).balanceOf(address(tokenDistribution));
@@ -161,8 +161,10 @@ contract TokenDistributionCreateVestingSchedule is Base {
         uint256 duration = 600; // Linear vests over 10 minutes
         uint256 amount = 1000 * 10**18;
 
+        bytes32 vestingScheduleId = tokenDistribution.computeNextVestingScheduleIdForHolder(address(TESTER));
+
         vm.expectEmit();
-        emit VestingScheduleCreated(address(token), address(TESTER), start, cliff, duration, amount);
+        emit VestingScheduleCreated(vestingScheduleId, address(token), address(TESTER), start, cliff, duration, amount);
 
         tokenDistribution.createVestingSchedule(address(token), TESTER, start, cliff, duration, amount);
     }

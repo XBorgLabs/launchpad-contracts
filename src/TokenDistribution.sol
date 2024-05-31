@@ -49,13 +49,14 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
     mapping(address => uint256) public holdersVestingCount;
 
     /// @notice Event emitted when a vesting schedule is created.
+    /// @param vestingScheduleId The id of the vesting schedule
     /// @param token The address of the token vested
     /// @param beneficiary The address of the beneficiary to whom vested tokens are transferred
     /// @param start The start time of the vesting period
     /// @param cliff The duration in seconds of the cliff in which tokens will begin to vest
     /// @param duration The duration in seconds of the period in which the tokens will vest
     /// @param amount The total amount of tokens to be released at the end of the vesting
-    event VestingScheduleCreated(address indexed token, address indexed beneficiary, uint256 start, uint256 cliff, uint256 duration, uint256 indexed amount);
+    event VestingScheduleCreated(bytes32 indexed vestingScheduleId, address token, address indexed beneficiary, uint256 start, uint256 cliff, uint256 duration, uint256 indexed amount);
 
     /// @notice Event emitted when a vesting schedule is revoked.
     /// @param vestingScheduleId The id of the vesting schedule
@@ -282,7 +283,7 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
         uint256 currentVestingCount = holdersVestingCount[_beneficiary];
         holdersVestingCount[_beneficiary] = currentVestingCount + 1;
 
-        emit VestingScheduleCreated(_token, _beneficiary, _start, _cliff, _duration, _amount);
+        emit VestingScheduleCreated(vestingScheduleId, _token, _beneficiary, _start, _cliff, _duration, _amount);
     }
 
     /// @notice Logic to release some tokens.
