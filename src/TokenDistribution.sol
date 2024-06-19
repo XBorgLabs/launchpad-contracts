@@ -145,7 +145,7 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
             _release(_vestingScheduleId, vestedAmount);
         }
         uint256 unreleased = vestingSchedule.amountTotal - vestingSchedule.released;
-        vestingSchedulesTotalAmount[vestingSchedule.token] = vestingSchedulesTotalAmount[vestingSchedule.token] - unreleased;
+        vestingSchedulesTotalAmount[vestingSchedule.token] -= unreleased;
         vestingSchedule.revoked = true;
 
         emit VestingScheduleRevoked(_vestingScheduleId);
@@ -279,11 +279,10 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
             false
         );
 
-        vestingSchedulesTotalAmount[_token] = vestingSchedulesTotalAmount[_token] + _amount;
+        vestingSchedulesTotalAmount[_token] += _amount;
         vestingSchedulesIds.push(vestingScheduleId);
 
-        uint256 currentVestingCount = holdersVestingCount[_beneficiary];
-        holdersVestingCount[_beneficiary] = currentVestingCount + 1;
+        holdersVestingCount[_beneficiary] += 1;
 
         emit VestingScheduleCreated(vestingScheduleId, _token, _beneficiary, _start, _cliff, _duration, _amount);
     }
@@ -302,8 +301,8 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
         require(vestedAmount >= _amount, "NOT_ENOUGH_TOKENS_RELEASED");
         require(_amount <= IERC20(vestingSchedule.token).balanceOf(address(this)), "NOT_ENOUGH_TOKENS");
 
-        vestingSchedule.released = vestingSchedule.released + _amount;
-        vestingSchedulesTotalAmount[vestingSchedule.token] = vestingSchedulesTotalAmount[vestingSchedule.token] - _amount;
+        vestingSchedule.released += _amount;
+        vestingSchedulesTotalAmount[vestingSchedule.token] -= _amount;
         IERC20(vestingSchedule.token).safeTransfer(vestingSchedule.beneficiary, _amount);
 
         emit Release(_vestingScheduleId, _amount);
