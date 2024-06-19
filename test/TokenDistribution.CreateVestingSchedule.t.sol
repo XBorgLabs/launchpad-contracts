@@ -45,6 +45,20 @@ contract TokenDistributionCreateVestingSchedule is Base {
         vm.stopPrank();
     }
 
+    function test_createVestingSchedule_wrongBeneficiary() public {
+        vm.startPrank(MANAGER);
+
+        uint256 start = block.timestamp;
+        uint256 cliff = 0;
+        uint256 duration = 0;
+        uint256 amount = 10000 * 10**18;
+
+        vm.expectRevert(bytes("ADDRESS_ZERO"));
+        tokenDistribution.createVestingSchedule(address(token), address(0), start, cliff, duration, amount);
+
+        vm.stopPrank();
+    }
+
     function test_createVestingSchedule_notEnoughTokens() public {
         vm.startPrank(MANAGER);
 
@@ -79,7 +93,7 @@ contract TokenDistributionCreateVestingSchedule is Base {
         uint256 start = block.timestamp;
         uint256 cliff = 0;
         uint256 duration = 3600;
-        uint256 amount = 0;
+        uint256 amount = 3599;
 
         vm.expectRevert(bytes("WRONG_AMOUNT"));
         tokenDistribution.createVestingSchedule(address(token), TESTER, start, cliff, duration, amount);

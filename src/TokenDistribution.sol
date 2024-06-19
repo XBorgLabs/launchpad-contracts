@@ -242,6 +242,8 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
     }
 
     /// @notice Logic to create a vesting schedule.
+    /// @dev Amount needs to be bigger than duration otherwise, due to rounding, tokens will only be available
+    /// after vesting ends.
     /// @param _token The token to distribute.
     /// @param _beneficiary The address of the beneficiary to whom vested tokens are transferred
     /// @param _start The start time of the vesting period
@@ -257,9 +259,10 @@ contract TokenDistribution is AccessControlEnumerableUpgradeable, ReentrancyGuar
         uint256 _amount
     ) internal {
         require(_token != address(0), "ADDRESS_ZERO");
+        require(_beneficiary != address(0), "ADDRESS_ZERO");
         require(getWithdrawableAmount(_token) >= _amount, "NOT_ENOUGH_TOKENS");
         require(_duration > 0, "WRONG_DURATION");
-        require(_amount > 0, "WRONG_AMOUNT");
+        require(_amount > _duration, "WRONG_AMOUNT");
         require(_start >= block.timestamp, "WRONG_TIME");
         require(_duration >= _cliff, "WRONG_DURATION_CLIFF");
 
